@@ -32,7 +32,26 @@ public class LinearHasher {
         }
         Kcount = 0;
     }
-    private void resize(){
+    private void rehashRow(int idx){
+        A[idx] = random.nextInt(1, P);
+        B[idx] = random.nextInt(P);
+        ArrayList<String> tmp=new ArrayList<>(table[idx].size());
+        for(String str:table[idx]){
+            if(str==null) continue;
+            int second_level=hash(str,idx);
+            tmp.set(second_level,str);
+        }
+        table[idx]=tmp;
+    }
+    private void rehashAll(){
+        a = random.nextInt(1, P);
+        b = random.nextInt(P);
+        A = new int[size];
+        B = new int[size];
+        for(int i=0;i<size;i++) {
+            A[i] = random.nextInt(1, P);
+            B[i] = random.nextInt(P);
+        }
         ArrayList<String>[]tmp=new ArrayList[size];
         for(ArrayList<String> bin:table){
             if(bin!=null)
@@ -63,11 +82,13 @@ public class LinearHasher {
         return (hash < 0) ? hash + size : hash;
     }
     public void insert(String K){
-//        if(not found)
+        if (contain(K)){
+            return;
+        }
         Kcount++;
-        if ((double) Kcount / Math.pow(size, 0.5) >= maximumThreshold) { //resize
-            size = (int) (size * 2);  //Math.pow(Math.pow(size, 1/2) * 2), 2)
-            resize();
+        if ((double) Kcount / Math.pow(size, 0.5) >= maximumThreshold) {
+            size = (int) (size * 1.6);  //Math.pow(Math.pow(size, 1/2) * 2), 2)
+            rehashAll();
             return;
         }
         int idx=hash(K,-1);
@@ -76,12 +97,20 @@ public class LinearHasher {
             table[idx].add(K);
         }
         else{
-            ArrayList<String> tmp=new ArrayList<>(size);
-            tmp.set(0,table[idx].getFirst());
-            table[idx]=tmp;
-            table[idx].set(hash(K,idx),K);
+            while (!)
         }
     }
+
+    boolean completeRow(ArrayList<String> list){
+        for(String str:list){
+            if(str==null) return false;
+        }
+        return true;
+    }
+
+
+
+
     public boolean contain(String key){
         int first_level=hash(key,-1);
         if(table[first_level]!=null){
@@ -92,12 +121,15 @@ public class LinearHasher {
         return false;
     }
 
+
+
+
     public boolean delete(String key){
         if (!contain(key)) return false;
         Kcount--;
-        if ((double) Kcount / Math.pow(size, 0.5) <= minimumThreshold) { //resize
+        if ((double) Kcount / Math.pow(size, 0.5) <= minimumThreshold) {
             size = (int) (size / 2); //Decrease by 2, "4" is after squaring.
-            resize();
+            rehashAll();
         }
         int first_level=hash(key,-1);
         if(table[first_level].size()==1) table[first_level]=null;
@@ -106,13 +138,12 @@ public class LinearHasher {
             table[first_level].set(second_level,null);
         }
         return true;
-
     }
     public static void main(String[] args) {
         LinearHasher hasher = new LinearHasher();
 
         System.out.println("Inserting 1 million unique keys...");
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             hasher.insert("word" + i);
         }
         for (int i = 0; i < 1000; i++) {
@@ -124,7 +155,7 @@ public class LinearHasher {
         System.out.println("Insertion done. Checking some keys:");
         System.out.println("Contains 'word0': " + hasher.contain("word0"));       // true
         System.out.println("Contains 'word999999': " + hasher.contain("word999")); // true
-        System.out.println("Contains 'word500000': " + hasher.contain("word50000")); // true
+        System.out.println("Contains 'word500000': " + hasher.contain("word50")); // true
         System.out.println("Contains 'nonexistent': " + hasher.contain("nonexistent")); // false
     }
 }
