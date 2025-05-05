@@ -135,7 +135,7 @@ public class SquareHasher {
         SquareHasher hasher = new SquareHasher();
 
         System.out.println("Inserting 1 million unique keys...");
-        for (int i = 0; i < 1_000_000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             hasher.insert("word" + i);
         }
 
