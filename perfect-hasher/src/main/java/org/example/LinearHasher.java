@@ -2,6 +2,7 @@ package org.example;
 
 import javax.print.DocFlavor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -35,7 +36,9 @@ public class LinearHasher {
     private void rehashRow(int idx){
         A[idx] = random.nextInt(1, P);
         B[idx] = random.nextInt(P);
-        ArrayList<String> tmp=new ArrayList<>(table[idx].size());
+        
+        ArrayList<String> tmp = new ArrayList<>(Collections.nCopies(table[idx].size(), null));
+        
         for(String str:table[idx]){
             if(str==null) continue;
             int second_level=hash(str,idx);
@@ -62,7 +65,7 @@ public class LinearHasher {
                     tmp[idx].add(str);
                 }
                 else{
-                    ArrayList<String> temp=new ArrayList<>(size);
+                    ArrayList<String> temp = new ArrayList<>(Collections.nCopies(size, null));
                     temp.set(0,tmp[idx].getFirst());
                     tmp[idx]=temp;
                     tmp[idx].set(hash(str,idx),str);
@@ -78,14 +81,14 @@ public class LinearHasher {
             return (hash < 0) ? hash + size : hash;
         }
         long h = key.hashCode();
-        int hash = (int) (((A[idx] * h + B[idx]) % P) % size);
+        int hash = (int) (((A[idx] * h + B[idx]) % P) % table[idx].size());
         return (hash < 0) ? hash + size : hash;
     }
     public void insert(String K){
         if (contain(K)){
             return;
         }
-        Kcount++;
+
         if ((double) Kcount / Math.pow(size, 0.5) >= maximumThreshold) {
             size = (int) (size * 1.6);  //Math.pow(Math.pow(size, 1/2) * 2), 2)
             rehashAll();
@@ -95,9 +98,25 @@ public class LinearHasher {
         if(table[idx]==null){
             table[idx]=new ArrayList<>(0);
             table[idx].add(K);
+            Kcount++;
         }
         else{
-            while (!)
+           int second_level=hash(K,idx);
+           if(completeRow(table[idx])){
+               ArrayList<String> tmp = new ArrayList<>(Collections.nCopies(table[idx].size()*2, null));
+               for(int i = 0 ; i < table[idx].size(); i++){
+                   tmp.set(i,table[idx].get(i));
+               }
+               table[idx] = tmp ;
+               rehashRow(idx);
+               insert(K);
+           }else if(table[idx].get(second_level)!=null){
+               rehashRow(idx);
+                insert(K);
+           }else{
+                table[idx].set(second_level,K);
+                Kcount++;
+           }
         }
     }
 
@@ -143,12 +162,6 @@ public class LinearHasher {
         LinearHasher hasher = new LinearHasher();
 
         System.out.println("Inserting 1 million unique keys...");
-        for (int i = 0; i < 10000; i++) {
-            hasher.insert("word" + i);
-        }
-        for (int i = 0; i < 1000; i++) {
-            hasher.delete("word" + i);
-        }
         for (int i = 0; i < 1000; i++) {
             hasher.insert("word" + i);
         }
