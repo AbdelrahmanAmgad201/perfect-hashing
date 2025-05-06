@@ -72,7 +72,7 @@ public class LinearHasher {
         int newSize = oldSize * 2;
         boolean collisionFree = false;
         int attempts = 0;
-        final int maxAttempts = 3; // Limit rehash attempts to prevent infinite loops
+        final int maxAttempts = 7;
 
         while (!collisionFree && attempts < maxAttempts) {
             table[idx] = new ArrayList<>(newSize);
@@ -83,7 +83,6 @@ public class LinearHasher {
             B[idx] = random.nextInt(P);
             collisionFree = true;
 
-            // Rehash all keys from old bucket
             for (String str : oldBucket) {
                 if (str != null) {
                     int second_level = hash(str, idx);
@@ -92,7 +91,7 @@ public class LinearHasher {
                     }
                     if (table[idx].get(second_level) != null) {
                         collisionFree = false;
-                        newSize *= 2; // Double size again
+                        newSize *= 2;
                         break;
                     }
                     table[idx].set(second_level, str);
@@ -100,35 +99,9 @@ public class LinearHasher {
             }
             attempts++;
         }
+        if(!collisionFree)
+        rehashAll();
 
-        if (!collisionFree) {
-            // Fallback: Keep doubling size until no collisions
-            newSize = oldSize * 4; // Larger initial jump
-            while (!collisionFree) {
-                table[idx] = new ArrayList<>(newSize);
-                for (int i = 0; i < newSize; i++) {
-                    table[idx].add(null);
-                }
-                A[idx] = random.nextInt(1, P);
-                B[idx] = random.nextInt(P);
-                collisionFree = true;
-
-                for (String str : oldBucket) {
-                    if (str != null) {
-                        int second_level = hash(str, idx);
-                        while (table[idx].size() <= second_level) {
-                            table[idx].add(null);
-                        }
-                        if (table[idx].get(second_level) != null) {
-                            collisionFree = false;
-                            newSize *= 2;
-                            break;
-                        }
-                        table[idx].set(second_level, str);
-                    }
-                }
-            }
-        }
     }
 
     private int hash(String key, int idx) {
@@ -162,15 +135,10 @@ public class LinearHasher {
             }
         }
         int second_level = hash(K, idx);
-        while (table[idx].size() <= second_level) {
-            table[idx].add(null);
-        }
+
         while (table[idx].get(second_level) != null) {
             rehashBucket(idx);
             second_level = hash(K, idx);
-            while (table[idx].size() <= second_level) {
-                table[idx].add(null);
-            }
         }
         table[idx].set(second_level, K);
         Kcount++;
@@ -203,18 +171,5 @@ public class LinearHasher {
             table[first_level] = null;
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        LinearHasher hasher = new LinearHasher();
-        System.out.println("Inserting 1000 unique keys...");
-        for (int i = 0; i < 1000000; i++) {
-            hasher.insert("word" + i);
-        }
-        System.out.println("Insertion done. Checking some keys:");
-        System.out.println("Contains 'word0': " + hasher.contain("word0")); // true
-        System.out.println("Contains 'word999': " + hasher.contain("word999")); // true
-        System.out.println("Contains 'word50': " + hasher.contain("word50")); // true
-        System.out.println("Contains 'nonexistent': " + hasher.contain("nonexistent")); // false
     }
 }
