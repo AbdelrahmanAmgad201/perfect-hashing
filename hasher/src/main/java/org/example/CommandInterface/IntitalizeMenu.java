@@ -1,5 +1,6 @@
 package org.example.CommandInterface;
 
+import org.example.maps.LinearHasher;
 import org.example.maps.MapInterface;
 import org.example.maps.SquareHasher;
 
@@ -32,10 +33,13 @@ public class IntitalizeMenu implements State{
                 System.exit(0);
             }
 
-            MapInterface map;
+            MapInterface map = null;
             switch (input) {
                 case "1":
                     map = new SquareHasher();
+
+                case "2":
+                    if (map == null) map = new LinearHasher();
                     nextState = new OperationMenu(scanner, map);
                     return;
 

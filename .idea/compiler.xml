@@ -9,5 +9,8 @@
         <module name="hasher" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="perfect-hasher" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

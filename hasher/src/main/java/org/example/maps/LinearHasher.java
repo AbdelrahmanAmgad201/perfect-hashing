@@ -3,7 +3,7 @@ package org.example.maps;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class LinearHasher {
+public class LinearHasher implements MapInterface {
     private final double maximumThreshold = 0.75;  // Load factor threshold for resizing
     private final double minimumThreshold = 0.25;  // Load factor threshold for shrinking
     private final int P = 1_000000_003;  // A large prime number for hashing
@@ -120,7 +120,7 @@ public class LinearHasher {
     }
 
     public boolean insert(String K) {
-        if (contain(K)) {
+        if (contains(K)) {
             return false;
         }
         if ((double) Kcount / size >= maximumThreshold) {
@@ -145,7 +145,7 @@ public class LinearHasher {
         return true;
     }
 
-    public boolean contain(String key) {
+    public boolean contains(String key) {
         int first_level = hash(key, -1);
         if (table[first_level] != null) {
             int second_level = hash(key, first_level);
@@ -158,7 +158,7 @@ public class LinearHasher {
     }
 
     public boolean delete(String key) {
-        if (!contain(key)) return false;
+        if (!contains(key)) return false;
         Kcount--;
         if (Kcount > 0 && (double) Kcount / size <= minimumThreshold) {
             size = Math.max(1000, size / 2);

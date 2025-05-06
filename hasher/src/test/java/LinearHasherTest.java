@@ -22,7 +22,7 @@ public class LinearHasherTest {
     void testInsertAndContainsSingleItem() {
         String key = "testKey";
         assertTrue(hasher.insert(key));
-        assertTrue(hasher.contain(key));
+        assertTrue(hasher.contains(key));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class LinearHasherTest {
         String key = "testKey";
         assertTrue(hasher.insert(key));
         assertFalse(hasher.insert(key));
-        assertTrue(hasher.contain(key));
+        assertTrue(hasher.contains(key));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class LinearHasherTest {
         String key = "testKey";
         hasher.insert(key);
         assertTrue(hasher.delete(key));
-        assertFalse(hasher.contain(key));
+        assertFalse(hasher.contains(key));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class LinearHasherTest {
         }
 
         for (String key : keys) {
-            assertTrue(hasher.contain(key));
+            assertTrue(hasher.contains(key));
         }
     }
 
@@ -91,7 +91,7 @@ public class LinearHasherTest {
         // Verify all keys are present
         int found = 0;
         for (String key : keys) {
-            if (hasher.contain(key)) {
+            if (hasher.contains(key)) {
                 found++;
             }
         }
@@ -153,7 +153,7 @@ public class LinearHasherTest {
 
         // Verify all keys are still present after rehashing
         for (String key : keys) {
-            assertTrue(hasher.contain(key), "Key should be present after rehashing: " + key);
+            assertTrue(hasher.contains(key), "Key should be present after rehashing: " + key);
         }
     }
 
@@ -180,7 +180,7 @@ public class LinearHasherTest {
             // Measure lookup time
             long lookupStart = System.nanoTime();
             for (String key : keys) {
-                newHasher.contain(key);
+                newHasher.contains(key);
             }
             long lookupEnd = System.nanoTime();
             long lookupTime = (lookupEnd - lookupStart) / 1_000_000;
@@ -222,9 +222,9 @@ public class LinearHasherTest {
         // Verify deleted keys are gone and others remain
         for (int i = 0; i < numItems; i++) {
             if (i < numItems / 2) {
-                assertFalse(hasher.contain(keys.get(i)), "Key should be deleted: " + keys.get(i));
+                assertFalse(hasher.contains(keys.get(i)), "Key should be deleted: " + keys.get(i));
             } else {
-                assertTrue(hasher.contain(keys.get(i)), "Key should be present: " + keys.get(i));
+                assertTrue(hasher.contains(keys.get(i)), "Key should be present: " + keys.get(i));
             }
         }
     }
@@ -258,7 +258,7 @@ public class LinearHasherTest {
                 case 2: // Lookup
                     if (!keys.isEmpty()) {
                         int indexToLookup = random.nextInt(keys.size());
-                        hasher.contain(keys.get(indexToLookup));
+                        hasher.contains(keys.get(indexToLookup));
                     }
                     break;
             }
