@@ -1,19 +1,19 @@
-package org.example;
+package org.example.maps;
 
-import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
-public class LinearHasher {
-    ArrayList<String>[] table ;
-    private int a, b;
-    private int size;
-    private final int P = 1_000_003;  // A large prime number for hashing
-    private final Random random = new Random();
+public class LinearHasher implements MapInterface {
     private final double maximumThreshold = 0.75;  // Load factor threshold for resizing
     private final double minimumThreshold = 0.25;  // Load factor threshold for resizing
+    private final int P = 1_000_003;  // A large prime number for hashing
+    private final Random random = new Random();
+
+    ArrayList<String>[] table ;
+
+    private int a, b;
+    private int size;
     private int rehashCounter ;
     private int [] A;
     private int [] B ;
@@ -33,6 +33,7 @@ public class LinearHasher {
         }
         Kcount = 0;
     }
+
     private void rehashRow(int idx){
         A[idx] = random.nextInt(1, P);
         B[idx] = random.nextInt(P);
@@ -46,6 +47,7 @@ public class LinearHasher {
         }
         table[idx]=tmp;
     }
+
     private void rehashAll(){
         a = random.nextInt(1, P);
         b = random.nextInt(P);
@@ -74,6 +76,7 @@ public class LinearHasher {
         }
         table=tmp;
     }
+
     private int hash(String key , int idx) {
         if(idx < 0){
             long h = key.hashCode();
@@ -84,9 +87,17 @@ public class LinearHasher {
         int hash = (int) (((A[idx] * h + B[idx]) % P) % table[idx].size());
         return (hash < 0) ? hash + size : hash;
     }
-    public void insert(String K){
+
+    boolean completeRow(ArrayList<String> list){
+        for(String str:list){
+            if(str==null) return false;
+        }
+        return true;
+    }
+
+    public boolean insert(String K){
         if (contain(K)){
-            return;
+            return false;
         }
 
         if ((double) Kcount / Math.pow(size, 0.5) >= maximumThreshold) {
@@ -120,16 +131,6 @@ public class LinearHasher {
         }
     }
 
-    boolean completeRow(ArrayList<String> list){
-        for(String str:list){
-            if(str==null) return false;
-        }
-        return true;
-    }
-
-
-
-
     public boolean contain(String key){
         int first_level=hash(key,-1);
         if(table[first_level]!=null){
@@ -139,9 +140,6 @@ public class LinearHasher {
         }
         return false;
     }
-
-
-
 
     public boolean delete(String key){
         if (!contain(key)) return false;
@@ -157,18 +155,5 @@ public class LinearHasher {
             table[first_level].set(second_level,null);
         }
         return true;
-    }
-    public static void main(String[] args) {
-        LinearHasher hasher = new LinearHasher();
-
-        System.out.println("Inserting 1 million unique keys...");
-        for (int i = 0; i < 1000; i++) {
-            hasher.insert("word" + i);
-        }
-        System.out.println("Insertion done. Checking some keys:");
-        System.out.println("Contains 'word0': " + hasher.contain("word0"));       // true
-        System.out.println("Contains 'word999999': " + hasher.contain("word999")); // true
-        System.out.println("Contains 'word500000': " + hasher.contain("word50")); // true
-        System.out.println("Contains 'nonexistent': " + hasher.contain("nonexistent")); // false
     }
 }
