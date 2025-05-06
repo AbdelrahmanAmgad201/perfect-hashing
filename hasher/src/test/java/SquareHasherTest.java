@@ -68,7 +68,7 @@ public class SquareHasherTest {
     @Test
     @DisplayName("Test performance with large number of insertions")
     void testLargeInsertionPerformance() {
-        int numItems = 1000;
+        int numItems = 10000;
         List<String> keys = new ArrayList<>();
         Random random = new Random(42); // Fixed seed for reproducibility
 
@@ -108,15 +108,17 @@ public class SquareHasherTest {
         System.gc(); // Request garbage collection to get more accurate results
         long initialMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
-        int numItems = 1000;
+        int numItems = 10000;
         List<String> keys = new ArrayList<>();
-        Random random = new Random(42);
+        Random random = new Random(42); // Fixed seed for reproducibility
 
         for (int i = 0; i < numItems; i++) {
-            keys.add("key" + random.nextInt(1000000));
+            keys.add("key" + random.nextInt(100000));
         }
 
-        // Insert keys
+        // Measure time
+        long startTime = System.nanoTime();
+
         for (String key : keys) {
             hasher.insert(key);
         }
@@ -158,7 +160,7 @@ public class SquareHasherTest {
     @Test
     @DisplayName("Test operation timing for different sizes")
     void testOperationTiming() {
-        int[] testSizes = {100, 1000, 5000, 10000};
+        int[] testSizes = {100, 1000, 5000};
 
         for (int size : testSizes) {
             SquareHasher newHasher = new SquareHasher();

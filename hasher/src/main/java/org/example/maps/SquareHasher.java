@@ -76,7 +76,7 @@ public class SquareHasher implements MapInterface{
             b = random.nextInt(P);
 
             rehashCounter++;
-            System.out.println("\"Rehashing!!!!\"");
+//            System.out.println("\"Rehashing!!!!\"");
 
             Arrays.fill(temp, null);
 
