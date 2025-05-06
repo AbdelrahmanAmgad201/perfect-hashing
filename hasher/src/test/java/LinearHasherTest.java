@@ -88,7 +88,7 @@ public class LinearHasherTest {
         long duration = (endTime - startTime) / 1_000_000; // Convert to milliseconds
 
         System.out.println("Time taken to insert " + numItems + " items: " + duration + " ms");
-        System.out.println("Rehash counter: " + hasher.getRehashingCount());
+        System.out.println("Rehash counter: " + hasher.getRehashCounter());
 
         // Verify all keys are present
         int found = 0;
@@ -151,7 +151,7 @@ public class LinearHasherTest {
         // Check if resizing occurred
         System.out.println("Initial size: " + initialSize);
         System.out.println("Final size: " + hasher.getSize());
-        System.out.println("Rehashes performed: " + hasher.getRehashingCount());
+        System.out.println("Rehashes performed: " + hasher.getRehashCounter());
 
         // Verify all keys are still present after rehashing
         for (String key : keys) {
@@ -191,7 +191,7 @@ public class LinearHasherTest {
             System.out.println("Size: " + size);
             System.out.println("  Insertion time: " + insertTime + " ms");
             System.out.println("  Lookup time: " + lookupTime + " ms");
-            System.out.println("  Rehash counter: " + newHasher.getRehashingCount());
+            System.out.println("  Rehash counter: " + newHasher.getRehashCounter());
         }
     }
 
