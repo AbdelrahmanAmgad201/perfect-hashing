@@ -19,7 +19,14 @@ public class LinearHasher {
     private int[] B;
     private int Kcount;
 
-    LinearHasher() {
+    public int getSize() {
+        return size;
+    }
+    public int getRehashingCount(){
+        return rehashCounter;
+    }
+
+    public LinearHasher() {
         this.table = new ArrayList[this.size];
         this.a = this.random.nextInt(1, 1000003);
         this.b = this.random.nextInt(1000003);
@@ -105,7 +112,7 @@ public class LinearHasher {
         }
     }
 
-    public void insert(String K) {
+    public boolean insert(String K) {
         if (!this.contain(K)) {
             ++this.Kcount;
             if ((double)this.Kcount / Math.pow((double)this.size, 0.5) >= 0.75) {
@@ -124,7 +131,9 @@ public class LinearHasher {
                 }
 
             }
+            return true;
         }
+        return false;
     }
 
     public boolean contain(String key) {
