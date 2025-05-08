@@ -17,10 +17,9 @@ public class LinearHasher implements MapInterface {
     private int[] A;
     private int[] B;
     private int Kcount;
-    private int RehashCounter;
 
     public int getRehashCounter() {
-        return RehashCounter;
+        return rehashCounter;
     }
 
     public int getSize() {
@@ -98,9 +97,10 @@ public class LinearHasher implements MapInterface {
                 }
             }
             attempts++;
+            rehashCounter++;
         }
         if(!collisionFree)
-        rehashAll();
+            rehashAll();
 
     }
 
