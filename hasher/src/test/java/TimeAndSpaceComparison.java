@@ -26,108 +26,110 @@ public class TimeAndSpaceComparison {
 
     @Test
     @DisplayName("Insert Time Compare")
-    void totalInsertTimeSpaceCompare() {
+    void totalInsertTimeCompare() {
         int n = 5000;
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < n; i++)
             keys.add(generateRandomString(10));
 
-        int[] sizes = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000};
+        int[] sizes = {1000, 2000, 3000, 4000, 5000};
 
-        System.out.printf("%-10s %-20s %-20s %-20s %-20s%n", "Size", "Linear Time (ms)", "Square Time (ms)", "Linear Mem (KB)", "Square Mem (KB)");
+        System.out.printf("%-10s %-20s %-20s%n", "Size", "Linear Time (ms)", "Square Time (ms)");
 
         for (int size : sizes) {
             MapInterface linearHasher = new LinearHasher();
-            MapInterface squareHasher = new SquareHasher();
-
-            // GC and memory baseline
-            System.gc();
-            long memBeforeLinear = getUsedMemory();
-
             long startLinear = System.nanoTime();
             for (int j = 0; j < size; j++)
                 linearHasher.insert(keys.get(j));
             long endLinear = System.nanoTime();
-            long memAfterLinear = getUsedMemory();
 
-            System.gc();
-            long memBeforeSquare = getUsedMemory();
-
+            MapInterface squareHasher = new SquareHasher();
             long startSquare = System.nanoTime();
             for (int j = 0; j < size; j++)
                 squareHasher.insert(keys.get(j));
             long endSquare = System.nanoTime();
-            long memAfterSquare = getUsedMemory();
 
             long linearTime = (endLinear - startLinear) / 1_000_000;
             long squareTime = (endSquare - startSquare) / 1_000_000;
-            long linearMem = (memAfterLinear - memBeforeLinear) / 1024;
-            long squareMem = (memAfterSquare - memBeforeSquare) / 1024;
 
-            System.out.printf("%-10d %-20d %-20d %-20d %-20d%n", size, linearTime, squareTime, linearMem, squareMem);
+            System.out.printf("%-10d %-20d %-20d%n", size, linearTime, squareTime);
         }
     }
 
     @Test
-    @DisplayName("Delete Time Compare")
-    void totalDeleteTimeSpaceCompare() {
+    @DisplayName("Insert Space Compare")
+    void totalInsertSpaceCompare() {
         int n = 5000;
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < n; i++)
             keys.add(generateRandomString(10));
 
-        MapInterface linearHasher = new LinearHasher();
-        MapInterface squareHasher = new SquareHasher();
+        int[] sizes = {1000, 2000, 3000, 4000, 5000};
 
-        for (String key : keys) {
-            linearHasher.insert(key);
-            squareHasher.insert(key);
+        System.out.printf("%-10s %-20s %-20s%n", "Size", "Linear Mem (KB)", "Square Mem (KB)");
+
+        for (int size : sizes) {
+            // LinearHasher memory
+            System.gc();
+            long memBeforeLinear = getUsedMemory();
+            MapInterface linearHasher = new LinearHasher();
+            for (int j = 0; j < size; j++)
+                linearHasher.insert(keys.get(j));
+            long memAfterLinear = getUsedMemory();
+
+            // SquareHasher memory
+            System.gc();
+            long memBeforeSquare = getUsedMemory();
+            MapInterface squareHasher = new SquareHasher();
+            for (int j = 0; j < size; j++)
+                squareHasher.insert(keys.get(j));
+            long memAfterSquare = getUsedMemory();
+
+            long linearMemKB = (memAfterLinear - memBeforeLinear) / 1024;
+            long squareMemKB = (memAfterSquare - memBeforeSquare) / 1024;
+
+            System.out.printf("%-10d %-20d %-20d%n", size, linearMemKB, squareMemKB);
         }
-
-        long startLinear = System.nanoTime();
-        for (String key : keys)
-            linearHasher.delete(key);
-        long endLinear = System.nanoTime();
-
-        long startSquare = System.nanoTime();
-        for (String key : keys)
-            squareHasher.delete(key);
-        long endSquare = System.nanoTime();
-
-        System.out.printf("Delete Time (5000 keys): Linear = %d ms, Square = %d ms%n",
-                (endLinear - startLinear) / 1_000_000,
-                (endSquare - startSquare) / 1_000_000);
     }
 
     @Test
     @DisplayName("Search Time Compare")
-    void totalSearchTimeSpaceCompare() {
-        int n = 100;
+    void totalSearchTimeCompare() {
+        int n = 5000;
         List<String> keys = new ArrayList<>();
         for (int i = 0; i < n; i++)
             keys.add(generateRandomString(10));
 
-        MapInterface linearHasher = new LinearHasher();
-        MapInterface squareHasher = new SquareHasher();
+        int[] sizes = {1000, 2000, 3000, 4000, 5000};
 
-        for (String key : keys) {
-            linearHasher.insert(key);
-            squareHasher.insert(key);
+        System.out.printf("%-10s %-20s %-20s%n", "Size", "Linear Search (ms)", "Square Search (ms)");
+
+        for (int size : sizes) {
+            MapInterface linearHasher = new LinearHasher();
+            for (int i = 0; i < size; i++) {
+                linearHasher.insert(keys.get(i));
+            }
+
+            long startLinear = System.nanoTime();
+            for (int i = 0; i < size; i++)
+                linearHasher.contains(keys.get(i));
+            long endLinear = System.nanoTime();
+
+            MapInterface squareHasher = new SquareHasher();
+            for (int i = 0; i < size; i++) {
+                squareHasher.insert(keys.get(i));
+            }
+
+            long startSquare = System.nanoTime();
+            for (int i = 0; i < size; i++)
+                squareHasher.contains(keys.get(i));
+            long endSquare = System.nanoTime();
+
+            long linearTime = (endLinear - startLinear) / 1_000_000;
+            long squareTime = (endSquare - startSquare) / 1_000_000;
+
+            System.out.printf("%-10d %-20d %-20d%n", size, linearTime, squareTime);
         }
-
-        long startLinear = System.nanoTime();
-        for (String key : keys)
-            linearHasher.contains(key);
-        long endLinear = System.nanoTime();
-
-        long startSquare = System.nanoTime();
-        for (String key : keys)
-            squareHasher.contains(key);
-        long endSquare = System.nanoTime();
-
-        System.out.printf("Search Time (5000 keys): Linear = %d ms, Square = %d ms%n",
-                (endLinear - startLinear) / 1_000_000,
-                (endSquare - startSquare) / 1_000_000);
     }
 
     @Test
